@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+
+# selected=$(find ~ -type f | fzf)
+# if [[ -z "$selected" ]]; then
+#   echo "No file selected"
+# fi
+# if [[ -f "$selected" ]]; then
+#   less "$selected"
+# fi
+
+read_flag=false
+dir="$PWD"
+vim_mode=false
+
+# Parse flags passed into the script
+while getopts "rav" opt; do
+  case "$opt" in
+    r) read_flag=true ;;  # Set the flag if -r is passed
+    a) dir="$HOME" ;;
+    v) vim_mode=true ;;
+    *) echo "Invalid option"; exit 1 ;;  # Handle invalid flags
+  esac
+done
+
+# Find a file using fzf
+selected=$(find "$dir" -type f | fzf)
+
+# Check if a file was selected
+if [[ -z "$selected" ]]; then
+  echo "No file selected"
+  exit 0
+fi
+
+# Check if the selected file exists and is a regular file
+if [[ -f "$selected" ]]; then
+  # If the -r flag is set, open the file with less
+  if [[ "$read_flag" == true ]]; then
+    less "$selected"
+  elif [[ "$vim_mode" == true ]]; then
+    nvim "$selected"
+  else
+    echo "Selected file: $selected"
+  fi
+else
+  echo "Selected item is not a valid file"
+fi

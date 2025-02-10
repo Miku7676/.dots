@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+if [[ $# -eq 1 ]]; then
+    selected=$1
+else
+    selected=$(find ~ ~/college ~/.config ~/learn ~/projects /mnt/c/MIKU/LEARN /mnt/c/MIKU/PROJECT /mnt/c/MIKU/COLLEGE -mindepth 1 -maxdepth 1 -type d | fzf)
+fi
+
+if [[ -z $selected ]]; then
+    exit 0
+fi
+
+selected_name=$(basename "$selected" | tr . _)
+tmux_running=$(pgrep tmux)
+
+activate_venv() {
+    venv_names=("venv" ".venv" "env" ".env")
+    
+    for venv in "${venv_names[@]}"; do
+        venv_path="$selected/$venv"
+        if [[ -d "$venv_path" && -f "$venv_path/bin/activate" ]]; then
+            source "$venv_path/bin/activate"
+            return 0
+        fi
+    done
+}
+
+activate_venv
+
+if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
+    tmux new-session -s $selected_name -c $selected
+    exit 0
+fi
+
+if ! tmux has-session -t=$selected_name 2> /dev/null; then
+    tmux new-session -ds $selected_name -c $selected
+fi
+
+tmux switch-client -t $selected_name
