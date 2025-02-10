@@ -8,11 +8,12 @@ STOW_FOLDERS="scripts, nvim, tmux, fzf, bash"
 # fi
 # STOW_FOLDERS=$STOW_FOLDERS DOTFILES=$DOTFILES #$DOTFILES/install
 
-# pushd $DOTFILES
 for folder in $(echo $STOW_FOLDERS | sed "s/,/ /g")
 do
     echo "stow $folder"
     stow -D $folder
     stow $folder
+    if [[ $folder == "tmux" ]]; then
+        ./tmx-plugs
+    fi
 done
-# popd

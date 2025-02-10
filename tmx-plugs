@@ -1,0 +1,23 @@
+#!/bin/bash
+
+TPM_DIR="$HOME/.tmux/plugins/tpm"
+
+
+if ! tmux has-session -t mysession 2>/dev/null; then
+  #tmux kill-session -t mysession
+  tmux new-session -d -s mysession
+fi
+
+if [ ! -d "$TPM_DIR" ]; then
+  echo "Cloning TPM..."
+  #rm -rf "$TPM_DIR"
+  git clone https://github.com/tmux-plugins/tpm $TPM_DIR
+fi
+
+tmux source-file ~/.tmux.conf
+
+tmux send-keys -t mysession 'tmux run-shell ~/.tmux/plugins/tpm/bin/install_plugins' Enter
+tmux send-keys -t mysession 'tmux run-shell ~/.tmux/plugins/tpm/bin/install_plugins' Enter
+sleep 5
+tmux kill-session -t mysession
+
