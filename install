@@ -8,6 +8,8 @@ STOW_FOLDERS="scripts, nvim, tmux, fzf, bash"
 # fi
 # STOW_FOLDERS=$STOW_FOLDERS DOTFILES=$DOTFILES #$DOTFILES/install
 
+sudo rm ~/.bashrc ~/.profile ~/.fzf.bash ~/.bash_aliases
+
 for folder in $(echo $STOW_FOLDERS | sed "s/,/ /g")
 do
     echo "stow $folder"
